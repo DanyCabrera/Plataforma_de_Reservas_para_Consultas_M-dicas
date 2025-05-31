@@ -127,21 +127,22 @@ app.put('/reservas/:id/disponibilidad', async (req, res) => {
 });
 
 // Registrar paciente con email
+// Ejemplo en Express
 app.post('/pacientes', async (req, res) => {
-  const { nombre, email } = req.body;
-  if (!nombre || !email) {
-    return res.status(400).json({ message: 'Nombre y correo requeridos' });
+  const { nombre } = req.body;
+  if (!nombre || nombre.trim() === '') {
+    return res.status(400).json({ message: "Nombre requerido" });
   }
-  // Verifica si ya existe
-  const existe = await pool.query('SELECT * FROM pacientes WHERE email = $1', [email]);
-  if (existe.rows.length > 0) {
-    return res.status(409).json({ message: 'El correo ya está registrado' });
+  try {
+    const result = await pool.query(
+      'INSERT INTO pacientes (nombre) VALUES ($1) RETURNING id, nombre',
+      [nombre.trim()]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error al registrar paciente:", error);
+    res.status(500).json({ message: "Error al registrar paciente" });
   }
-  const result = await pool.query(
-    'INSERT INTO pacientes (nombre, email) VALUES ($1, $2) RETURNING *',
-    [nombre, email]
-  );
-  res.json(result.rows[0]);
 });
 
 // Obtener todos los pacientes (para el panel del médico)

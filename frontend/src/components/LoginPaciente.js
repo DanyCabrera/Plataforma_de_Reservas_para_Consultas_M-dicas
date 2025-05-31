@@ -4,7 +4,6 @@ const API = "http://localhost:3002";
 function LoginPaciente({ onLogin }) {
   const [step, setStep] = useState(1); // 1: registro, 2: login
   const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
   const [pacientes, setPacientes] = useState([]);
   const [pacienteId, setPacienteId] = useState("");
   const [error, setError] = useState("");
@@ -16,30 +15,21 @@ function LoginPaciente({ onLogin }) {
       .catch(() => setPacientes([]));
   }, [step]);
 
-  // Validación básica de email
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   // Registrar paciente
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
-    if (!nombre.trim() || !email.trim()) {
-      setError("Ingresa nombre y correo");
-      return;
-    }
-    if (!isValidEmail(email)) {
-      setError("Correo electrónico inválido");
+    if (!nombre.trim()) {
+      setError("Ingresa el nombre");
       return;
     }
     const res = await fetch(`${API}/pacientes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre, email }),
+      body: JSON.stringify({ nombre }),
     });
     if (res.ok) {
       setNombre("");
-      setEmail("");
       setStep(2);
       setError("");
     } else {
@@ -79,7 +69,6 @@ function LoginPaciente({ onLogin }) {
     setStep(2);
     setError("");
     setNombre("");
-    setEmail("");
   };
 
   return (

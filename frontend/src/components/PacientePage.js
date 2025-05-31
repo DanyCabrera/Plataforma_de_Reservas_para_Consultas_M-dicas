@@ -31,7 +31,7 @@ function PacientePage({ pacienteId, onLogout }) {
   };
   useEffect(() => {
     cargarCitas();
-  }, [pacienteId]);
+  }, [cargarCitas]);
 
   // Cargar historial médico
   useEffect(() => {
